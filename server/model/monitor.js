@@ -16,6 +16,10 @@ const { CacheableDnsHttpAgent } = require("../cacheable-dns-http-agent");
 const { DockerHost } = require("../docker");
 const Maintenance = require("./maintenance");
 
+const { TCPClient, getServers: getHostServers } = require("dns2");
+
+const isIpRegex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/gi;
+
 /**
  * status:
  *      0 = DOWN
@@ -443,7 +447,18 @@ class Monitor extends BeanModel {
                 } else if (this.type === "steam") {
                     const steamApiUrl = "https://api.steampowered.com/IGameServersService/GetServerList/v1/";
                     const steamAPIKey = await setting("steamAPIKey");
-                    const filter = `addr\\${this.hostname}:${this.port}`;
+
+                    let ip = this.hostname;
+
+                    if (!isIpRegex.text(this.hostname)) {
+                        // We need to lookup the ip
+                        const resolve = TCPClient({
+                            dns: getHostServers()[0]
+                        });
+                        ip = await resolve(this.hostname);
+                    }
+
+                    const filter = `addr\\${ip}:${this.port}`;
 
                     if (!steamAPIKey) {
                         throw new Error("Steam API Key not found");

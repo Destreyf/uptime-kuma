@@ -16,7 +16,7 @@ const { CacheableDnsHttpAgent } = require("../cacheable-dns-http-agent");
 const { DockerHost } = require("../docker");
 const Maintenance = require("./maintenance");
 
-const { TCPClient, getServers: getHostServers } = require("dns2");
+const DNS2 = require("dns2");
 
 const isIpRegex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/gi;
 
@@ -452,10 +452,8 @@ class Monitor extends BeanModel {
 
                     if (!isIpRegex.test(this.hostname)) {
                         // We need to lookup the ip
-                        const resolve = TCPClient({
-                            dns: getHostServers()[0]
-                        });
-                        ip = await resolve(this.hostname);
+                        const dns2 = new DNS2();
+                        ip = await dns2.resolveA(this.hostname);
                     }
 
                     const filter = `addr\\${ip}:${this.port}`;

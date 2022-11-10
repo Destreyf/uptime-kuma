@@ -490,7 +490,7 @@ class Monitor extends BeanModel {
                         bean.msg = res.data.response.servers[0].name;
 
                         try {
-                            bean.ping = await ping(this.hostname);
+                            bean.ping = await ping(ip);
                         } catch (_) { }
                     } else {
                         throw new Error("Server not found on Steam");

@@ -450,7 +450,7 @@ class Monitor extends BeanModel {
 
                     let ip = this.hostname;
 
-                    if (!isIpRegex.text(this.hostname)) {
+                    if (!isIpRegex.test(this.hostname)) {
                         // We need to lookup the ip
                         const resolve = TCPClient({
                             dns: getHostServers()[0]

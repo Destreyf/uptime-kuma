@@ -453,13 +453,14 @@ class Monitor extends BeanModel {
                     if (!isIpRegex.test(this.hostname)) {
                         // We need to lookup the ip
                         const dns2 = new DNS2();
-                        ip = await dns2.resolveA(this.hostname);
+                        const dnsResult = await dns2.resolveA(this.hostname);
+                        ip = dnsResult.answers[0].address;
                     }
 
                     const filter = `addr\\${ip}:${this.port}`;
 
                     if (!steamAPIKey) {
-                        throw new Error(`Steam API Key not found`);
+                        throw new Error("Steam API Key not found");
                     }
 
                     let res = await axios.get(steamApiUrl, {

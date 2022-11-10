@@ -459,7 +459,7 @@ class Monitor extends BeanModel {
                     const filter = `addr\\${ip}:${this.port}`;
 
                     if (!steamAPIKey) {
-                        throw new Error("Steam API Key not found");
+                        throw new Error(`Steam API Key not found`);
                     }
 
                     let res = await axios.get(steamApiUrl, {
@@ -493,7 +493,7 @@ class Monitor extends BeanModel {
                             bean.ping = await ping(ip);
                         } catch (_) { }
                     } else {
-                        throw new Error("Server not found on Steam");
+                        throw new Error(`Server not found on Steam: ${ip}:${this.port}`);
                     }
                 } else if (this.type === "docker") {
                     log.debug(`[${this.name}] Prepare Options for Axios`);
